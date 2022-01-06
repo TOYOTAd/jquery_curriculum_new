@@ -29,14 +29,22 @@
       // .fadeOut() 一定時間かけてフェードアウトする。
       $(function(){
         $('.modal-show').on('click',function(){
-          $('.modal').fadeIn();
-          return false;
+          modal_fi();
         });
         $('.modal-close').on('click',function(){
-          $('.modal').fadeOut();
-          return false;
+          modal_fo();
         });
       });
+
+      function modal_fi(){
+        $('.modal').fadeIn();
+        return false;
+      }
+
+      function modal_fo(){
+        $('.modal').fadeOut();
+          return false;
+      }
     </script>
   </body>
 </html>
