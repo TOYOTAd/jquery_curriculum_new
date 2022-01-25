@@ -102,12 +102,12 @@
 
       $(function() {
         $(".select").change(function(){
-          var select=$(this).val();
-          if(select=="all"){
-            $('ul.list li').each(function(){ $(this).show() });
+          var select=$(".select").val();
+          if(select==="all"){
+            $('ul.list li').show();
           } else {
             $('ul.list li').each(function(){
-              if($(this).data("category-type")==select){
+              if($(this).data("category-type")===select){
                 $(this).show();
               } else {
                 $(this).hide();

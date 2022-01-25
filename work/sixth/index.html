@@ -28,6 +28,92 @@
     <script src="../../common/js/jquery.js"></script>
     <script src="./js/appid.js"></script>
     <script>
+      $(function(){
+        $('.search__btn').on('click',function(){
+
+          $('.comment').hide();
+
+          var keyword = $('.search__text__input').val();
+
+          if(keyword === ""){
+            $('.lists').after('<div class="comment"></div>');
+            comment = $('.lists');
+            comment.html('<p class="message">検索文字が入力されていません。</p>');
+            return;
+          }
+
+          $.ajax({
+            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+              applicationId: appId,
+              booksGenreId: '001',
+              keyword: keyword,
+              hits: 20,
+              page: 1,
+            },
+          }).done(function(data){
+          
+            //削除
+            $("ul").html('');
+
+            console.log(data);
+
+            if (data.count > 0){
+              
+              $.each(data.Items,function(i,item){
+                //console.log(item);
+                var list = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="' +
+                  item.Item.itemUrl + '"class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">' +
+                  '<p class="lists__item__detail">作品名：　' + item.Item.title + '</p>' +
+                  '<p class="lists__item__detail">作者　：　' + item.Item.author + '</p>' +
+                  '<p class="lists__item__detail">出版社：　' + item.Item.publisherName + '</p>' + '</a>' +
+                  '</div>' + '</li>');
+                $('ul').append(list);
+              })
+
+              var pager = $('<div class="pager" data-js="pager">'
+                + '<div class="counter">'
+                  + '<span class="counter-current">' + data.page + '</span>' + "/" + '<span class="counter-all">' + data.pageCount + '</span>'
+                + '</div>'
+                + '<div class="btn-wrapper">'
+                  + '<a class="btn-item disabled" data-js="page-prev" href>前へ</a>'
+                  + '<a class="btn-item" data-js="page-next" href>次へ</a>'
+                + '</div>'
+              + '</div>');
+
+              $('.lists').append(pager); //表示
+
+              if (data.page > 1){
+                $("#btn-item").prop("disabled", false);
+              }
+              if (data.page = data.pageCount) {
+                $('.btn-item').prop('disabled', true);
+              }
+              
+              $('.btn-item').on('click', function(){
+
+                event.preventDefault();
+
+              });
+              
+            } else if (data.count === 0) {
+              $('.lists').before('<div class="comment"></div>')
+              comment = $('.comment');
+              comment.html('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
+            };
+
+          }).fail(function(data){
+
+            $("ul").html('');
+            $('.lists').after('<div class="comment"></div>')
+            comment = $('.comment');
+            comment.html('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+          })
+        })
+      });
+
       // 楽天ブックスの総合検索APIを使って製作してください。
       // answerの挙動を良く見てね！
       //
