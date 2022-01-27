@@ -29,7 +29,10 @@
     <script src="./js/appid.js"></script>
     <script>
       $(function(){
-        $('.search__btn').on('click',function(){
+
+        var pn = 3;
+
+        $('.search__btn').on('click',function load(){
 
           $('.comment').hide();
 
@@ -51,9 +54,9 @@
               booksGenreId: '001',
               keyword: keyword,
               hits: 20,
-              page: 1,
+              page: pn,
             },
-          }).done(function(data){
+          }).done(function (data){
           
             //削除
             $("ul").html('');
@@ -79,23 +82,37 @@
                 + '</div>'
                 + '<div class="btn-wrapper">'
                   + '<a class="btn-item disabled" data-js="page-prev" href>前へ</a>'
-                  + '<a class="btn-item" data-js="page-next" href>次へ</a>'
+                  + '<a class="btn-item disabled" data-js="page-next" href>次へ</a>'
                 + '</div>'
               + '</div>');
 
               $('.lists').append(pager); //表示
 
-              if (data.page > 1){
-                $("#btn-item").prop("disabled", false);
+              
+              if (pn > 1){
+                $('.btn-wrapper > a').eq(0).removeClass('disabled');
               }
-              if (data.page = data.pageCount) {
-                $('.btn-item').prop('disabled', true);
+
+              if (pn < data.pageCount){
+                $('.btn-wrapper > a').eq(1).removeClass('disabled');
               }
               
               $('.btn-item').on('click', function(){
-
                 event.preventDefault();
+              });
 
+              $('.btn-wrapper > a').eq(0).on('click', function(){
+                if (pn > 1){
+                  pn--;
+                }
+                load();
+              });
+
+              $('.btn-wrapper > a').eq(1).on('click', function(){
+                if (pn < data.pageCount){
+                  pn++;
+                }
+                load();
               });
               
             } else if (data.count === 0) {
