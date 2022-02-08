@@ -57,16 +57,6 @@
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
             datatype: 'json',
-            statusCode: { 400: function(){
-                            $('.lists').append('<p class="message">検索文字が入力されていません。</p>');
-                          },
-                          404: function(){
-                            $('.lists').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
-                          },
-                          429: function(){
-                            $('.lists').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください</p>');
-                          }
-                        },
             data: {
               applicationId: appId,
               booksGenreId: '001',
@@ -81,6 +71,18 @@
               listIndicate(data);
               pagerIndicate(data);
             };
+          }).fail(function(jqXHR){
+            switch (jqXHR.status) {
+              case 400:
+                $('.lists').append('<p class="message">検索文字が入力されていません。</p>');
+                break;
+              case 404:
+                $('.lists').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+                break;
+              case 429:
+                $('.lists').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください</p>');
+                break;
+            }
           })
         };
 
