@@ -29,7 +29,7 @@
     <script src="./js/appid.js"></script>
     <script>
       $(function(){
-        
+
         $('.search__btn').on('click',function (){
           pagenumber = 1;
           keyword = $('[data-js = "search-word"]').val();
@@ -72,9 +72,9 @@
         };
 
         function listIndicate(data){
-          //console.log(item);
+          var lists = [];
           $.each(data.Items,function(i,item){
-            var list = $('<li class="lists__item">' 
+            var list = ('<li class="lists__item">' 
               + '<div class="lists__item__inner">' 
                 + '<a href="' + item.Item.itemUrl + '"class="lists__item__link" target="_blank">' 
                   + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">' 
@@ -84,9 +84,9 @@
                 + '</a>' 
               + '</div>' 
             + '</li>');
-
-            $('.lists').append(list); //prependにすると前後逆順になる
+            lists += list;
           });
+          $('.lists').append(lists);
         };
 
         function pagerIndicate(data){
@@ -140,6 +140,12 @@
               break;
             case 429:
               $('.lists').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください</p>');
+              break;
+            case 0:
+              $('.lists').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+              break;
+            default:
+              $('.lists').append('<p class="message">例外エラーが発生しております。</p>');
               break;
           }
         };
