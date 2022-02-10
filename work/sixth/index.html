@@ -31,11 +31,9 @@
       $(function(){
 
         var pagenumber = 1;
-
-        //var keyword = $('[data-js = "search-word"]').val(); //機能しない
-        //console.log(keyword);
         
         $('.search__btn').on('click',function (){
+          keyword = $('[data-js = "search-word"]').val();
           search();
         });
 
@@ -50,8 +48,6 @@
         function search(){
           
           $('.lists').html(null); //一面削除
-
-          var keyword = $('[data-js = "search-word"]').val();
           
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
@@ -72,17 +68,7 @@
               pagerIndicate(data);
             };
           }).fail(function(jqXHR){
-            switch (jqXHR.status) {
-              case 400:
-                $('.lists').append('<p class="message">検索文字が入力されていません。</p>');
-                break;
-              case 404:
-                $('.lists').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
-                break;
-              case 429:
-                $('.lists').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください</p>');
-                break;
-            }
+            errortext(jqXHR);
           })
         };
 
@@ -142,6 +128,20 @@
           if (pagenumber < maxpagecount){
             pagenumber++;
             search();
+          }
+        };
+
+        function errortext(jqXHR){
+          switch (jqXHR.status) {
+            case 400:
+              $('.lists').append('<p class="message">検索文字が入力されていません。</p>');
+              break;
+            case 404:
+              $('.lists').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+              break;
+            case 429:
+              $('.lists').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください</p>');
+              break;
           }
         };
       });
