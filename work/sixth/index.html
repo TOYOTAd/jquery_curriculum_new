@@ -29,10 +29,9 @@
     <script src="./js/appid.js"></script>
     <script>
       $(function(){
-
-        var pagenumber = 1;
         
         $('.search__btn').on('click',function (){
+          pagenumber = 1;
           keyword = $('[data-js = "search-word"]').val();
           search();
         });
@@ -86,7 +85,7 @@
               + '</div>' 
             + '</li>');
 
-            $('.lists').prepend(list);
+            $('.lists').append(list); //prependにすると前後逆順になる
           });
         };
 
