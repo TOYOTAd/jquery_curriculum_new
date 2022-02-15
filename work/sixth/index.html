@@ -36,17 +36,31 @@
           search();
         });
 
-        $('.lists').on('click', '[data-js = "page-prev"]', function(){
-          previousPage();
+        $('.container').on('click', '[data-js = "page-prev"]', function(){
+          event.preventDefault();
+          if ($(this).hasClass("disabled")){
+            ;
+          } else {
+            pagenumber--;
+            search();
+          }
         });
 
-        $('.lists').on('click', '[data-js = "page-next"]', function(){
-          nextPage();
+        $('.container').on('click', '[data-js = "page-next"]', function(){
+          event.preventDefault();
+          if ($(this).hasClass("disabled")){
+            ;
+          } else {
+            pagenumber++;
+            search();
+          }
         });
         
         function search(){
           
-          $('.lists').html(null); //一面削除
+          $('.lists').empty();
+          $('.message').empty();
+          $('.pager').remove();
           
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
@@ -62,7 +76,7 @@
           }).done(function(data){
             if (data.count === 0){
               $('.lists').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>')
-            } else if (data.count > 1) {
+            } else {
               listIndicate(data);
               pagerIndicate(data);
             };
@@ -72,9 +86,9 @@
         };
 
         function listIndicate(data){
-          var lists = [];
+          var list = '';
           $.each(data.Items,function(i,item){
-            var list = ('<li class="lists__item">' 
+            list += '<li class="lists__item">' 
               + '<div class="lists__item__inner">' 
                 + '<a href="' + item.Item.itemUrl + '"class="lists__item__link" target="_blank">' 
                   + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">' 
@@ -83,69 +97,49 @@
                   + '<p class="lists__item__detail">出版社：　' + item.Item.publisherName + '</p>' 
                 + '</a>' 
               + '</div>' 
-            + '</li>');
-            lists += list;
+            + '</li>';
           });
-          $('.lists').append(lists);
+          $('.lists').append(list);
         };
 
         function pagerIndicate(data){
-
-          maxpagecount = data.pageCount;
-
           var pager = $('<div class="pager" data-js="pager">'
             + '<div class="counter">'
               + '<span class="counter-current">' + data.page + '</span>' + "/" + '<span class="counter-all">' + data.pageCount + '</span>'
             + '</div>'
             + '<div class="btn-wrapper">'
-              + '<a class="btn-item disabled" data-js="page-prev" href>前へ</a>'
-              + '<a class="btn-item disabled" data-js="page-next" href>次へ</a>'
+              + '<a class="btn-item" data-js="page-prev" href>前へ</a>'
+              + '<a class="btn-item" data-js="page-next" href>次へ</a>'
             + '</div>'
           + '</div>');
 
-          $('.lists').append(pager);
+          $('.lists').after(pager);
         
-          if (pagenumber > 1){
-            $('[data-js = "page-prev"]').removeClass('disabled');
+          if (pagenumber === 1){
+            $('[data-js = "page-prev"]').addClass('disabled');
           }
 
-          if (pagenumber < data.pageCount){
-            $('[data-js = "page-next"]').removeClass('disabled');
-          }
-        };
-
-        function previousPage(data){
-          event.preventDefault();
-          if (pagenumber > 1){
-            pagenumber--;
-            search();
-          }
-        };
-        
-        function nextPage(data){
-          event.preventDefault();
-          if (pagenumber < maxpagecount){
-            pagenumber++;
-            search();
+          if (pagenumber === data.pageCount){
+            $('[data-js = "page-next"]').addClass('disabled');
           }
         };
 
         function errortext(jqXHR){
           switch (jqXHR.status) {
+            case 0:
+              $('.message').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+              break;
             case 400:
-              $('.lists').append('<p class="message">検索文字が入力されていません。</p>');
+              $('.message').append('<p class="message">検索文字が入力されていません。</p>');
               break;
             case 404:
-              $('.lists').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+              $('.message').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
               break;
             case 429:
-              $('.lists').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください</p>');
-              break;
-            case 0:
-              $('.lists').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+              $('.message').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください</p>');
               break;
             default:
-              $('.lists').append('<p class="message">例外エラーが発生しております。</p>');
+              $('.message').append('<p class="message">例外エラーが発生しております。</p>');
               break;
           }
         };
